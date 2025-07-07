@@ -41,7 +41,7 @@ jobs:
           php-version: '8.2'
           extensions: mbstring, pdo, pdo_mysql, memcached, xdebug
 
-      - name: 🛠 Create .env for CI
+      - name: 🛠 Set up .env for CI
         run: |
           echo "DB_HOST=127.0.0.1" > .env
           echo "DB_PORT=3306" >> .env
@@ -63,15 +63,14 @@ jobs:
             sleep 5
           done
 
-      - name: 🧪 Check if users table exists
+      - name: 🔐 Fix permissions on PHPUnit
         run: |
-          mysql -h127.0.0.1 -uroot -proot -e "SHOW TABLES IN cruddb;" || true
-
-      - name: 🔐 Fix permission on PHPUnit binary
-        run: chmod +x vendor/bin/phpunit
+          chmod -R 755 vendor
+          chmod +x vendor/bin/phpunit
 
       - name: 🧪 Run PHPUnit tests with coverage
-        run: XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-clover coverage.xml
+        run: |
+          XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-clover coverage.xml
 
       - name: 📤 Upload coverage to Codecov
         uses: codecov/codecov-action@v4
