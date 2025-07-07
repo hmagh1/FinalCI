@@ -1,1 +1,1 @@
-{"version":1,"defects":[],"times":[]}
+{"version":1,"defects":{"UserControllerTest::testCanBeInstantiated":4},"times":{"UserControllerTest::testCanBeInstantiated":2.726}}
