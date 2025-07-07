@@ -24,7 +24,7 @@ jobs:
           --health-timeout=5s
           --health-retries=5
         volumes:
-          - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+          - ./db:/docker-entrypoint-initdb.d:ro
 
       memcached:
         image: memcached:alpine
@@ -41,7 +41,7 @@ jobs:
           php-version: '8.2'
           extensions: mbstring, pdo, pdo_mysql, memcached, xdebug
 
-      - name: Copy CI .env file
+      - name: Copy .env for CI
         run: |
           echo "DB_HOST=127.0.0.1" > .env
           echo "DB_PORT=3306" >> .env
@@ -63,11 +63,10 @@ jobs:
             sleep 5
           done
 
-      - name: Make PHPUnit executable
-        run: chmod +x vendor/bin/phpunit
-
       - name: Run PHPUnit tests with coverage
-        run: XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-clover coverage.xml
+        run: |
+          chmod +x vendor/bin/phpunit
+          XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-clover coverage.xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -76,3 +75,7 @@ jobs:
           files: coverage.xml
           fail_ci_if_error: true
           verbose: true
+
+      - name: Debug MySQL logs on failure
+        if: failure()
+        run: docker logs $(docker ps -a -q --filter ancestor=mysql:8.0)
