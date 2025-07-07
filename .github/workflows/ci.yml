@@ -1,4 +1,4 @@
-name: CI Pipeline with SonarQube
+name: CI Pipeline
 
 on:
   push:
@@ -17,14 +17,14 @@ jobs:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: cruddb
         ports:
-          - 3307:3306
+          - 3306:3306
+        volumes:
+          - ./db:/docker-entrypoint-initdb.d:ro
         options: >-
           --health-cmd="mysqladmin ping --silent"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
-        volumes:
-          - ./db:/docker-entrypoint-initdb.d:ro
 
       memcached:
         image: memcached:alpine
@@ -41,10 +41,10 @@ jobs:
           php-version: '8.2'
           extensions: mbstring, pdo, pdo_mysql, memcached, xdebug
 
-      - name: 🛠 Create .env for CI
+      - name: 🛠 Set up .env for CI
         run: |
           echo "DB_HOST=127.0.0.1" > .env
-          echo "DB_PORT=3307" >> .env
+          echo "DB_PORT=3306" >> .env
           echo "DB_NAME=cruddb" >> .env
           echo "DB_USER=root" >> .env
           echo "DB_PASS=root" >> .env
@@ -54,8 +54,8 @@ jobs:
 
       - name: 🐢 Wait for MySQL to be ready
         run: |
-          for i in {1..10}; do
-            if mysqladmin ping -h127.0.0.1 -P3307 -uroot -proot --silent; then
+          for i in {1..15}; do
+            if mysqladmin ping -h127.0.0.1 -uroot -proot --silent; then
               echo "✅ MySQL is up!"
               break
             fi
@@ -63,20 +63,23 @@ jobs:
             sleep 5
           done
 
-      - name: ✅ Run PHPUnit with coverage
+      - name: 🔍 Check if 'users' table exists
+        run: |
+          mysql -h127.0.0.1 -uroot -proot -e "USE cruddb; SHOW TABLES LIKE 'users';"
+
+      - name: 🧪 Run PHPUnit tests with coverage
         run: |
           chmod +x vendor/bin/phpunit
           XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-clover coverage.xml
 
-      - name: 🔎 Run SonarQube analysis
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
-          unzip sonar-scanner.zip
-          export PATH="$PWD/sonar-scanner-5.0.1.3006-linux/bin:$PATH"
-          sonar-scanner
+      - name: 📤 Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml
+          fail_ci_if_error: true
+          verbose: true
 
-      - name: 🐛 Debug MySQL logs if failed
+      - name: 🐛 Debug MySQL logs on failure
         if: failure()
         run: docker logs $(docker ps -a -q --filter ancestor=mysql:8.0)
