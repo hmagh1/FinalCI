@@ -10,6 +10,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    # Services nécessaires pour l'application
     services:
       mysql:
         image: mysql:8.0
@@ -30,15 +31,18 @@ jobs:
           - 11211:11211
 
     steps:
+      # 1️⃣ Récupérer le code depuis GitHub
       - name: 📥 Checkout code
         uses: actions/checkout@v3
 
+      # 2️⃣ Installer PHP et ses extensions nécessaires
       - name: 🐘 Set up PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           extensions: mbstring, pdo, pdo_mysql, memcached, xdebug
 
+      # 3️⃣ Créer le fichier .env pour configurer la base de données
       - name: 🛠 Set up .env for CI
         run: |
           echo "DB_HOST=127.0.0.1" > .env
@@ -47,9 +51,11 @@ jobs:
           echo "DB_USER=root" >> .env
           echo "DB_PASS=root" >> .env
 
+      # 4️⃣ Installer les dépendances via Composer
       - name: 📦 Install Composer dependencies
         run: composer install --no-progress --prefer-dist
 
+      # 5️⃣ Attendre que MySQL soit prêt à accepter les connexions
       - name: 🐢 Wait for MySQL to be ready
         run: |
           for i in {1..10}; do
@@ -61,16 +67,23 @@ jobs:
             sleep 5
           done
 
-      - name: ⚙️ Seed database manually (init.sql)
+      # 6️⃣ Importer le fichier SQL dans la base de données manuellement
+      - name: ⚙️ Seed database (init.sql)
         run: |
-          echo "⚡ Executing db/init.sql manually"
+          echo "⚡ Seeding DB from db/init.sql"
           mysql -h127.0.0.1 -uroot -proot cruddb < db/init.sql
 
+      # 7️⃣ Supprimer le cache de PHPUnit (protection contre tests obsolètes)
+      - name: ♻️ Clear PHPUnit cache
+        run: rm -f .phpunit.result.cache
+
+      # 8️⃣ Lancer les tests unitaires avec couverture de code
       - name: 🧪 Run PHPUnit tests with coverage
         run: |
-          chmod +x vendor/bin/phpunit
+          chmod +x vendor/bin/phpunit || true
           XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-clover coverage.xml
 
+      # 9️⃣ Uploader les résultats de couverture vers Codecov
       - name: 📤 Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
@@ -79,6 +92,7 @@ jobs:
           fail_ci_if_error: true
           verbose: true
 
+      # 🔍 Étape de débogage des logs MySQL en cas d’échec
       - name: 🐛 Debug MySQL logs on failure
         if: failure()
         run: docker logs $(docker ps -a -q --filter ancestor=mysql:8.0)
