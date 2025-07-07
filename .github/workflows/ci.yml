@@ -32,16 +32,16 @@ jobs:
           - 11211:11211
 
     steps:
-      - name: Checkout code
+      - name: 📥 Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up PHP
+      - name: 🐘 Set up PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           extensions: mbstring, pdo, pdo_mysql, memcached, xdebug
 
-      - name: Copy .env for CI
+      - name: 🛠 Set up .env for CI
         run: |
           echo "DB_HOST=127.0.0.1" > .env
           echo "DB_PORT=3306" >> .env
@@ -49,10 +49,10 @@ jobs:
           echo "DB_USER=root" >> .env
           echo "DB_PASS=root" >> .env
 
-      - name: Install Composer dependencies
+      - name: 📦 Install Composer dependencies
         run: composer install --no-progress --prefer-dist
 
-      - name: Wait for MySQL to be ready
+      - name: 🐢 Wait for MySQL to be ready
         run: |
           for i in {1..10}; do
             if mysqladmin ping -h127.0.0.1 -uroot -proot --silent; then
@@ -63,12 +63,19 @@ jobs:
             sleep 5
           done
 
-      - name: Run PHPUnit tests with coverage
+      - name: 🔍 Debug: check db/init.sql
+        run: |
+          echo "📁 Listing db directory"
+          ls -la db
+          echo "📄 Showing content of init.sql"
+          cat db/init.sql
+
+      - name: 🧪 Run PHPUnit tests with coverage
         run: |
           chmod +x vendor/bin/phpunit
           XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-clover coverage.xml
 
-      - name: Upload coverage to Codecov
+      - name: 📤 Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -76,6 +83,6 @@ jobs:
           fail_ci_if_error: true
           verbose: true
 
-      - name: Debug MySQL logs on failure
+      - name: 🐛 Debug MySQL logs on failure
         if: failure()
         run: docker logs $(docker ps -a -q --filter ancestor=mysql:8.0)
