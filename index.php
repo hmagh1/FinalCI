@@ -2,6 +2,7 @@
 require_once __DIR__ . '/vendor/autoload.php';
 
 use App\UserController;
+// ✅ CI Test: This is a successful PR
 
 header('Content-Type: application/json');
 
