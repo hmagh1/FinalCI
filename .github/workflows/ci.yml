@@ -63,12 +63,12 @@ jobs:
             sleep 5
           done
 
-      - name: 🔍 Debug: check db/init.sql
+      - name: 🔍 Debug init script
         run: |
           echo "📁 Listing db directory"
-          ls -la db
-          echo "📄 Showing content of init.sql"
-          cat db/init.sql
+          ls -la db || echo "❌ db directory not found"
+          echo "📄 Showing init.sql content"
+          cat db/init.sql || echo "❌ init.sql not found"
 
       - name: 🧪 Run PHPUnit tests with coverage
         run: |
@@ -85,4 +85,6 @@ jobs:
 
       - name: 🐛 Debug MySQL logs on failure
         if: failure()
-        run: docker logs $(docker ps -a -q --filter ancestor=mysql:8.0)
+        run: |
+          echo "🔍 Fetching MySQL logs..."
+          docker ps -a --filter ancestor=mysql:8.0 --format "{{.ID}}" | xargs -r docker logs || echo "❌ No MySQL container logs found"
