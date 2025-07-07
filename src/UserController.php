@@ -56,6 +56,11 @@ class UserController {
     public function deleteUser(int $id): string {
         $stmt = $this->db->prepare("DELETE FROM users WHERE id = ?");
         $stmt->execute([$id]);
-        return json_encode(["deleted" => true, "id" => $id]);
+        return json_encode([
+    "success" => true,
+    "message" => "User with ID $id deleted successfully.",
+    "id" => $id
+]);
+
     }
 }
