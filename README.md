@@ -19,6 +19,9 @@ This repository contains a clean, containerized PHP REST API for managing users 
 
 ---
 
+
+## ✅ Ce projet est équipé d'une CI GitHub Actions avec Codecov.
+
 ## 🧪 Postman Testing
 
 ### Base URL (local)
