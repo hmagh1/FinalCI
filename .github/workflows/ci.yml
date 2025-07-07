@@ -18,13 +18,14 @@ jobs:
           MYSQL_DATABASE: cruddb
         ports:
           - 3306:3306
+        # Montre le dossier ./db contenant init.sql dans le conteneur pour initialiser la base
+        volumes:
+          - ./db:/docker-entrypoint-initdb.d:ro
         options: >-
           --health-cmd="mysqladmin ping --silent"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
-        volumes:
-          - ./db:/docker-entrypoint-initdb.d:ro
 
       memcached:
         image: memcached:alpine
@@ -32,15 +33,18 @@ jobs:
           - 11211:11211
 
     steps:
+      # 📥 Récupération du code source
       - name: 📥 Checkout code
         uses: actions/checkout@v3
 
+      # 🐘 Installation de PHP avec les extensions requises
       - name: 🐘 Set up PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
           extensions: mbstring, pdo, pdo_mysql, memcached, xdebug
 
+      # 🛠 Génération du fichier .env pour la connexion à la base de données
       - name: 🛠 Set up .env for CI
         run: |
           echo "DB_HOST=127.0.0.1" > .env
@@ -49,9 +53,11 @@ jobs:
           echo "DB_USER=root" >> .env
           echo "DB_PASS=root" >> .env
 
+      # 📦 Installation des dépendances via Composer
       - name: 📦 Install Composer dependencies
         run: composer install --no-progress --prefer-dist
 
+      # 🐢 Attente que MySQL soit prêt
       - name: 🐢 Wait for MySQL to be ready
         run: |
           for i in {1..10}; do
@@ -63,15 +69,20 @@ jobs:
             sleep 5
           done
 
-      - name: 🔐 Fix permissions on PHPUnit
+      # 🔍 Affiche le contenu du fichier SQL de création de la table
+      - name: 🔍 Debug: check db/init.sql
         run: |
-          chmod -R 755 vendor
-          chmod +x vendor/bin/phpunit
+          echo "📁 Listing db directory"
+          ls -la db
+          echo "📄 Showing content of init.sql"
+          cat db/init.sql
 
+      # 🧪 Lancement des tests PHPUnit avec couverture
       - name: 🧪 Run PHPUnit tests with coverage
         run: |
-          XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-clover coverage.xml
+          XDEBUG_MODE=coverage php vendor/bin/phpunit --coverage-clover coverage.xml
 
+      # 📤 Envoi de la couverture de code vers Codecov
       - name: 📤 Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
@@ -80,6 +91,7 @@ jobs:
           fail_ci_if_error: true
           verbose: true
 
+      # 🐛 Affichage des logs MySQL en cas d'échec
       - name: 🐛 Debug MySQL logs on failure
         if: failure()
         run: docker logs $(docker ps -a -q --filter ancestor=mysql:8.0)
