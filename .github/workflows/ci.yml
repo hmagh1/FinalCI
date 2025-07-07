@@ -23,8 +23,6 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
-        volumes:
-          - ./db:/docker-entrypoint-initdb.d:ro
 
       memcached:
         image: memcached:alpine
@@ -63,17 +61,15 @@ jobs:
             sleep 5
           done
 
-      - name: 🔍 Debug: check db/init.sql
+      - name: ⚙️ Seed database manually (init.sql)
         run: |
-          echo "📁 Listing db directory"
-          ls -la db
-          echo "📄 Showing content of init.sql"
-          cat db/init.sql
+          echo "⚡ Executing db/init.sql manually"
+          mysql -h127.0.0.1 -uroot -proot cruddb < db/init.sql
 
       - name: 🧪 Run PHPUnit tests with coverage
         run: |
           chmod +x vendor/bin/phpunit
-          XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-clover coverage.xml
+          XDEBUG_MODE=coverage vendor/bin/phpunit --coverage-clover coverage.xml
 
       - name: 📤 Upload coverage to Codecov
         uses: codecov/codecov-action@v4
