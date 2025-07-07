@@ -3,6 +3,8 @@ name: CI Pipeline
 on:
   pull_request:
     branches: [ main ]
+  push:
+    branches: [ main ]
 
 jobs:
   test:
@@ -40,14 +42,16 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-progress --no-suggest --prefer-dist
 
+      - name: Make PHPUnit executable
+        run: chmod +x vendor/bin/phpunit
+
       - name: Run PHPUnit tests
-        run: |
-          vendor/bin/phpunit --coverage-clover coverage.xml
+        run: vendor/bin/phpunit --coverage-clover coverage.xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          token: 7be6475b-38c3-4bc4-a2e0-dd50178ecbc1
+          token: ${{ secrets.CODECOV_TOKEN }}
           files: coverage.xml
           fail_ci_if_error: true
           verbose: true
