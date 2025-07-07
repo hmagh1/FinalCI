@@ -23,8 +23,6 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
-        volumes:
-          - ./db:/docker-entrypoint-initdb.d:ro
 
       memcached:
         image: memcached:alpine
@@ -63,12 +61,10 @@ jobs:
             sleep 5
           done
 
-      - name: 🔍 Debug init script
+      - name: ⚙️ Seed database manually (init.sql)
         run: |
-          echo "📁 Listing db directory"
-          ls -la db || echo "❌ db directory not found"
-          echo "📄 Showing init.sql content"
-          cat db/init.sql || echo "❌ init.sql not found"
+          echo "⚡ Executing db/init.sql manually"
+          mysql -h127.0.0.1 -uroot -proot cruddb < db/init.sql
 
       - name: 🧪 Run PHPUnit tests with coverage
         run: |
@@ -85,6 +81,4 @@ jobs:
 
       - name: 🐛 Debug MySQL logs on failure
         if: failure()
-        run: |
-          echo "🔍 Fetching MySQL logs..."
-          docker ps -a --filter ancestor=mysql:8.0 --format "{{.ID}}" | xargs -r docker logs || echo "❌ No MySQL container logs found"
+        run: docker logs $(docker ps -a -q --filter ancestor=mysql:8.0)
