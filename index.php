@@ -7,7 +7,7 @@ header('Content-Type: application/json');
 
 // Initialiser le contrôleur
 $controller = new UserController();
-
+//test
 // Détecter la méthode HTTP et le chemin
 $method = $_SERVER['REQUEST_METHOD'];
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
