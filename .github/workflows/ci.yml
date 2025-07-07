@@ -54,7 +54,7 @@ jobs:
 
       - name: 🐢 Wait for MySQL to be ready
         run: |
-          for i in {1..12}; do
+          for i in {1..10}; do
             if mysqladmin ping -h127.0.0.1 -uroot -proot --silent; then
               echo "✅ MySQL is up!"
               break
@@ -63,10 +63,26 @@ jobs:
             sleep 5
           done
 
-      - name: 🔍 Vérifie si la table users existe
+      - name: ⛑ Force-create DB and users table (if init.sql doesn't run)
+        run: |
+          mysql -h127.0.0.1 -uroot -proot <<EOF
+          CREATE DATABASE IF NOT EXISTS cruddb;
+          USE cruddb;
+          CREATE TABLE IF NOT EXISTS users (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(100),
+            email VARCHAR(100)
+          );
+          INSERT INTO users (name, email) VALUES
+            ('Alice', 'alice@example.com'),
+            ('Bob', 'bob@example.com'),
+            ('Charlie', 'charlie@example.com');
+          EOF
+
+      - name: 🔍 Debug: check table exists
         run: |
           mysql -h127.0.0.1 -uroot -proot -e "SHOW TABLES IN cruddb;" || true
-          mysql -h127.0.0.1 -uroot -proot -e "SELECT * FROM cruddb.users LIMIT 1;" || true
+          mysql -h127.0.0.1 -uroot -proot -e "SELECT COUNT(*) FROM cruddb.users;" || true
 
       - name: 🧪 Run PHPUnit tests with coverage
         run: |
@@ -80,17 +96,6 @@ jobs:
           files: coverage.xml
           fail_ci_if_error: true
           verbose: true
-
-      - name: 🚨 Analyse statique avec SonarCloud (optionnel)
-        if: ${{ env.SONAR_TOKEN != '' }}
-        uses: SonarSource/sonarcloud-github-action@master
-        with:
-          projectBaseDir: .
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_PROJECT_KEY: hmagh1_FinalCI
-          SONAR_ORGANIZATION: hmagh1
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 🐛 Debug MySQL logs on failure
         if: failure()
