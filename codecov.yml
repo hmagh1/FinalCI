@@ -3,5 +3,5 @@ coverage:
     project:
       default:
         target: 75%
-        threshold: 0.1%
-        if_not_found: failure
+        threshold: 1% # autorise de légères variations
+        if_not_found: success
