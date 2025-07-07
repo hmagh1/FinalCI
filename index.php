@@ -4,7 +4,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 use App\UserController;
 
 header('Content-Type: application/json');
-
+//test
 // Initialiser le contrôleur
 $controller = new UserController();
 
