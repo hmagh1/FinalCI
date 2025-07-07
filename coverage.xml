@@ -1,43 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1751885155">
-  <project timestamp="1751885155">
+<coverage generated="1751885754">
+  <project timestamp="1751885754">
     <file name="C:\Users\hassa\Downloads\php_crud_final_docs_ci_azure\src\UserController.php">
       <class name="App\UserController" namespace="global">
-        <metrics complexity="10" methods="6" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="25" coveredstatements="0" elements="31" coveredelements="0"/>
+        <metrics complexity="6" methods="6" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="28" coveredstatements="17" elements="34" coveredelements="19"/>
       </class>
-      <line num="7" type="method" name="__construct" visibility="public" complexity="5" crap="30" count="0"/>
-      <line num="8" type="stmt" count="0"/>
-      <line num="9" type="stmt" count="0"/>
-      <line num="10" type="stmt" count="0"/>
-      <line num="11" type="stmt" count="0"/>
-      <line num="13" type="stmt" count="0"/>
-      <line num="14" type="stmt" count="0"/>
-      <line num="15" type="stmt" count="0"/>
-      <line num="18" type="method" name="getAllUsers" visibility="public" complexity="1" crap="2" count="0"/>
-      <line num="19" type="stmt" count="0"/>
-      <line num="20" type="stmt" count="0"/>
-      <line num="23" type="method" name="getUser" visibility="public" complexity="1" crap="2" count="0"/>
-      <line num="24" type="stmt" count="0"/>
-      <line num="25" type="stmt" count="0"/>
-      <line num="26" type="stmt" count="0"/>
-      <line num="29" type="method" name="createUser" visibility="public" complexity="1" crap="2" count="0"/>
+      <line num="10" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="1"/>
+      <line num="12" type="stmt" count="1"/>
+      <line num="13" type="stmt" count="1"/>
+      <line num="16" type="stmt" count="1"/>
+      <line num="17" type="stmt" count="1"/>
+      <line num="18" type="stmt" count="1"/>
+      <line num="19" type="stmt" count="1"/>
+      <line num="20" type="stmt" count="1"/>
+      <line num="22" type="stmt" count="1"/>
+      <line num="25" type="stmt" count="1"/>
+      <line num="26" type="stmt" count="1"/>
+      <line num="29" type="method" name="getAllUsers" visibility="public" complexity="1" crap="2" count="0"/>
       <line num="30" type="stmt" count="0"/>
       <line num="31" type="stmt" count="0"/>
-      <line num="32" type="stmt" count="0"/>
-      <line num="33" type="stmt" count="0"/>
-      <line num="34" type="stmt" count="0"/>
+      <line num="34" type="method" name="getUser" visibility="public" complexity="1" crap="2" count="0"/>
       <line num="35" type="stmt" count="0"/>
       <line num="36" type="stmt" count="0"/>
-      <line num="39" type="method" name="updateUser" visibility="public" complexity="1" crap="2" count="0"/>
-      <line num="40" type="stmt" count="0"/>
-      <line num="41" type="stmt" count="0"/>
-      <line num="42" type="stmt" count="0"/>
-      <line num="45" type="method" name="deleteUser" visibility="public" complexity="1" crap="2" count="0"/>
-      <line num="46" type="stmt" count="0"/>
-      <line num="47" type="stmt" count="0"/>
-      <line num="48" type="stmt" count="0"/>
-      <metrics loc="51" ncloc="50" classes="1" methods="6" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="25" coveredstatements="0" elements="31" coveredelements="0"/>
+      <line num="37" type="stmt" count="0"/>
+      <line num="40" type="method" name="createUser" visibility="public" complexity="1" crap="1" count="1"/>
+      <line num="41" type="stmt" count="1"/>
+      <line num="42" type="stmt" count="1"/>
+      <line num="43" type="stmt" count="1"/>
+      <line num="44" type="stmt" count="1"/>
+      <line num="45" type="stmt" count="1"/>
+      <line num="46" type="stmt" count="1"/>
+      <line num="47" type="stmt" count="1"/>
+      <line num="50" type="method" name="updateUser" visibility="public" complexity="1" crap="2" count="0"/>
+      <line num="51" type="stmt" count="0"/>
+      <line num="52" type="stmt" count="0"/>
+      <line num="53" type="stmt" count="0"/>
+      <line num="56" type="method" name="deleteUser" visibility="public" complexity="1" crap="2" count="0"/>
+      <line num="57" type="stmt" count="0"/>
+      <line num="58" type="stmt" count="0"/>
+      <line num="59" type="stmt" count="0"/>
+      <metrics loc="62" ncloc="58" classes="1" methods="6" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="28" coveredstatements="17" elements="34" coveredelements="19"/>
     </file>
-    <metrics files="1" loc="51" ncloc="50" classes="1" methods="6" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="25" coveredstatements="0" elements="31" coveredelements="0"/>
+    <metrics files="1" loc="62" ncloc="58" classes="1" methods="6" coveredmethods="2" conditionals="0" coveredconditionals="0" statements="28" coveredstatements="17" elements="34" coveredelements="19"/>
   </project>
 </coverage>
